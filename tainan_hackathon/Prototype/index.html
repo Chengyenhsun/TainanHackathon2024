@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Prototype.css">
+    <title>搜尋地圖上的資料</title>
+</head>
+<body>
+    <div class="search-container">
+        <h1>主題美食搜尋</h1>
+        <input id="searchword" type="text" placeholder="輸入想搜尋的地點或主題" />
+        <button id="searchbtn">搜尋</button>
+    </div>
+
+    <div class="main-content">
+        <div class="left-panel">
+            <div class="filter-box">
+                <div class="filter-title">距離</div>
+                <div class="slider-container">
+                    <input type="range" id="distanceslider" min="0" max="40" value="20">
+                    <span id="distancevalue">20 km</span>
+                </div>
+            </div>
+
+            <div class="filter-box">
+                <div class="filter-title-star">
+                    <span class="filter-title">星等</span>
+                    <div class="star-rating" id="starRating">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-box">
+                <div class="filter-title">區域</div>
+                <div class="filter-options">
+                    <label><input type="checkbox" value="中西區"> 中西區</label>
+                    <label><input type="checkbox" value="東區"> 東區</label>
+                    <label><input type="checkbox" value="北區"> 北區</label>
+                    <label><input type="checkbox" value="南區"> 南區</label>
+                    <label><input type="checkbox" value="永康區"> 永康區</label>
+                    <label><input type="checkbox" value="安平區"> 安平區</label>
+                </div>
+            </div>
+
+            <div class="filter-box">
+                <div class="filter-title">分類主題</div>
+                <div class="filter-options">
+                    <label><input type="checkbox" value="蛋糕店"> 蛋糕店</label>
+                    <label><input type="checkbox" value="牛肉湯"> 牛肉湯</label>
+                    <label><input type="checkbox" value="咖啡廳"> 咖啡廳</label>
+                    <label><input type="checkbox" value="冰品"> 冰品</label>
+                    <label><input type="checkbox" value="飲料店"> 飲料店</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div id="result">
+                <h2>搜尋結果：</h2>
+                <!-- 搜尋結果將顯示在這裡 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="Prototype.js"></script>
+</body>
+</html>

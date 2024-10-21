@@ -1,0 +1,117 @@
+body {
+    font-family: Arial, sans-serif;
+    color: #5a5757;
+    margin: 20px;
+    height: 100vh; 
+    display: flex;
+    flex-direction: column; 
+}
+
+.search-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#searchword {
+    padding: 10px;
+    width: 50%; 
+    font-size: 18px;
+}
+
+#searchbtn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #6193c9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+#searchbtn:hover {
+    background-color: #6193c9;
+}
+
+.main-content {
+    display: flex; 
+    flex: 1; 
+    overflow: hidden; 
+}
+
+.left-panel {
+    flex: 1; /* 左側佔1/3 */
+    max-width: 30%; 
+    padding: 10px;
+}
+
+.right-panel {
+    flex: 2; /* 右側佔2/3 */
+    padding: 10px;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column; 
+}
+
+.filter-box {
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+}
+
+#distanceslider {
+    width: 80%; 
+    margin-right: 10px; 
+}
+
+.filter-title-star {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    margin-bottom: 10px;
+}
+
+.filter-options label {
+    display: block; 
+    margin: 5px 0; 
+    font-size: 22px; 
+}
+
+.filter-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.star-rating {
+    display: flex;
+    cursor: pointer;
+    justify-content: center; 
+    flex: 1; 
+}
+
+.star {
+    font-size: 24px;
+    color: lightgray;
+}
+
+.star.selected {
+    color: gold;
+}
+
+#result {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    flex: 1; 
+    overflow-y: auto; /* 允許垂直滾動 */
+}
