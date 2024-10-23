@@ -5,28 +5,38 @@ body {
     height: 100vh; 
     display: flex;
     flex-direction: column; 
+    font-size: 1em;
 }
 
 .search-container {
     text-align: center;
-    margin-bottom: 20px;
+/*    margin-bottom: 1em;*/
+    background-color: #134984;
+}
+
+.search-container h1 {
+    color: white;
+    font-size: 2.2em;
+    margin-bottom: 0em;
 }
 
 #searchword {
-    padding: 10px;
+    padding: 0.625em;
     width: 50%; 
-    font-size: 18px;
+    font-size: 1em; 
+    margin-right: 0.8em;
+    margin-bottom: 1.5em;
 }
 
 #searchbtn {
-    margin-top: 15px;
-    padding: 10px 20px;
+    margin-top: 0.9375em; 
+    padding: 0.6em 1.2em; 
     background-color: #6193c9;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.3125em; 
     cursor: pointer;
-    font-size: 18px;
+    font-size: 1.125em; 
 }
 
 #searchbtn:hover {
@@ -40,24 +50,30 @@ body {
 }
 
 .left-panel {
-    flex: 1; /* 左側佔1/3 */
+    flex: 1; 
     max-width: 30%; 
-    padding: 10px;
+    padding: 0.625em;
+    overflow-y: auto;
 }
 
 .right-panel {
-    flex: 2; /* 右側佔2/3 */
-    padding: 10px;
-    margin-left: 20px;
-    display: flex;
-    flex-direction: column; 
+    flex: 2; 
+    padding: 0.625em;
+    margin-left: 1.25em;
+    padding: 1.25em;
+/*    display: flex;
+    flex-direction: column; */
+    overflow-y: auto;
+    background-color: transparent;
+    border: none;
 }
 
+
 .filter-box {
-    margin: 20px 0;
-    padding: 10px;
+    margin: 1.25em 0; 
+    padding: 0.625em;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 0.3125em; 
     background-color: #f8f9fa;
 }
 
@@ -68,50 +84,98 @@ body {
 
 #distanceslider {
     width: 80%; 
-    margin-right: 10px; 
+    margin-right: 0.625em;
+    color: #6193c9;
 }
 
 .filter-title-star {
     display: flex;
     align-items: center;
     justify-content: flex-start; 
-    margin-bottom: 10px;
+    margin-bottom: 0.625em; 
 }
 
 .filter-options label {
     display: block; 
-    margin: 5px 0; 
-    font-size: 22px; 
+    margin: 0.3125em 0; 
+    font-size: 1em; 
 }
 
 .filter-title {
-    font-size: 24px;
+    font-size: 1.25em; 
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 0.625em; 
+    display: flex;
 }
 
 .star-rating {
     display: flex;
     cursor: pointer;
     justify-content: center; 
+    align-items: center;
     flex: 1; 
 }
 
 .star {
-    font-size: 24px;
+    font-size: 1.25em; 
+    margin: 0.1em;
+    justify-content: center; 
+    align-items: center;
     color: lightgray;
+}
+
+.star:hover {
+    color: gold;
 }
 
 .star.selected {
     color: gold;
 }
 
+.star.rated {
+    color: #ffcc00;
+    font-size: 1em; 
+}
+
 #result {
-    margin-top: 20px;
-    padding: 10px;
+    margin-top: 1.25em;
+    padding-left: 1.25em;
+    padding-right: 1.25em;
     background-color: #f8f9fa;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 0.3125em; 
     flex: 1; 
-    overflow-y: auto; /* 允許垂直滾動 */
 }
+
+#result h2 {
+    font-size: 1.25em;
+}
+
+.place-item {
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 1.25em; 
+    padding: 0.625em; 
+    border: 1px solid #3f3a3a; 
+    border-radius: 0.3125em; 
+}
+
+.place-item-left {
+    display: flex;
+    flex-direction: column;
+    flex: 1; 
+}
+
+.place-item-right {
+    display: flex;
+    align-items: center; 
+    margin-left: auto;
+    flex: 0;
+}
+
+.place-check {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+

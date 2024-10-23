@@ -11,10 +11,11 @@ app = FastAPI()
 class SearchRequest(BaseModel):
     searchword: str
     searchdistance: int
+    selectedRating: int
 
 
-map = googlemaps.Client(key="AIzaSyDcQ8cLUCZWKr5_E320wBJnK79QrJagUaM")
-MaxItemNum = 50
+map = googlemaps.Client(key="AIzaSyAiBroOElwIbiRMwUud5LQAg_6UwWOafJA")
+MaxItemNum = 10
 
 geocode_result = map.geocode("Tainan")[0]
 location = geocode_result["geometry"]["location"]
@@ -32,8 +33,10 @@ async def search(request: SearchRequest):
     result = map.places_nearby(
         location, keyword=request.searchword, radius=request.searchdistance * 1000
     )
-    search_result.extend(result["results"])
-    next = result["next_page_token"]
+    for r in result["results"]:
+        if float(r["rating"]) > request.selectedRating:
+            search_result.append(r)
+    next = result.get("next_page_token")
 
     while len(search_result) < MaxItemNum:
         time.sleep(2)
@@ -43,7 +46,9 @@ async def search(request: SearchRequest):
             radius=request.searchdistance * 1000,
             page_token=next,
         )
-        search_result.extend(result["results"])
+        for r in result["results"]:
+            if float(r["rating"]) > request.selectedRating:
+                search_result.append(r)
         next = result.get("next_page_token")
 
     ReturnAll = ""
@@ -76,9 +81,9 @@ async def search(request: SearchRequest):
     search_result = sorted(search_result, key=lambda x: x["score"], reverse=True)
 
     for place in search_result:
-        ReturnAll += f"<div class='place-item'>{place['name']} {place['rating']} {place['user_ratings_total']}</div>"
+        ReturnAll += f"<div class='place-item'><div class='place-item-left'><div class='place-item-name'>{place['name']}</div><div class='place-item-rating'>{place['rating']} <span class='star rated'>★</span> {place['user_ratings_total']} 則評論</div></div><div class='place-item-right'><label class='place-check'><input type='checkbox'></label></div></div>"
 
     return ReturnAll
 
 
-app.mount("/Home", StaticFiles(directory="Prototype", html=True))
+app.mount("/Home", StaticFiles(directory="Prototype_1021", html=True))

@@ -1,35 +1,49 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const stars = document.querySelectorAll('.star');
+    let selectedRating = 0;
     const slider = document.getElementById("distanceslider");
     const output = document.getElementById("distancevalue");
-    let selectedStarRating = 0; // 儲存選擇的星等值
 
-    // 初始化距離滑條的值
     updateDistanceValue(slider.value);
 
-    // 綁定距離滑條事件
+
     slider.oninput = function () {
         updateDistanceValue(this.value);
     };
 
-    // 綁定搜尋按鈕事件
+ 
+    stars.forEach((star, index) => {
+        star.addEventListener('mouseover', () => {
+            highlightStars(index);
+        });
+
+        star.addEventListener('mouseout', () => {
+            highlightStars(selectedRating - 1); 
+        });
+
+        star.addEventListener('click', () => {
+            selectedRating = index + 1; 
+            highlightStars(index);
+            console.log('選擇的星等:', selectedRating);
+        });
+    });
+
+    
     document.getElementById("searchbtn").onclick = handleSearch;
 
-    // 綁定星等選擇事件
-    bindStarRatingEvents();
 
-    // 更新距離滑條的顯示值
     function updateDistanceValue(value) {
         output.innerText = `${value} km`;
     }
 
-    // 處理搜尋按鈕的邏輯
+
     async function handleSearch() {
         const searchword = document.getElementById("searchword").value;
         const searchdistance = slider.value;
 
-        console.log('搜尋字詞:', searchword);
-        console.log('搜尋距離:', searchdistance);
-        console.log('選擇的星等:', selectedStarRating);
+        console.log('searchword:', searchword);
+        console.log('searchdistance:', searchdistance);
+        console.log('selectedRating:', selectedRating);
 
         try {
             const response = await fetch("/search", {
@@ -37,12 +51,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ searchword, searchdistance, starRating: selectedStarRating })
+                body: JSON.stringify({ searchword, searchdistance, selectedRating })
             });
 
             if (response.ok) {
                 const data = await response.text();
-                document.getElementById("result").innerHTML = data;
+                const Data = data.replace(/^"(.*)"$/, '$1');
+                document.getElementById("result").innerHTML = "<h2>搜尋結果：</h2>"+Data;
             } else {
                 const errorData = await response.json();
                 console.error("Error details:", errorData);
@@ -54,19 +69,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // 綁定星等選擇功能
-    function bindStarRatingEvents() {
-        const stars = document.querySelectorAll('.star');
-        stars.forEach((star, index) => {
-            star.dataset.value = index + 1; // 為每個星等元素添加 data-value 屬性
-            star.addEventListener('click', () => {
-                stars.forEach(s => s.classList.remove('selected'));
-                for (let i = 0; i <= index; i++) {
-                    stars[i].classList.add('selected');
-                }
-                selectedStarRating = star.dataset.value; // 更新選擇的星等
-                console.log('選擇的星等:', selectedStarRating);
-            });
+    
+    function highlightStars(index) {
+        stars.forEach((star, i) => {
+            if (i <= index) {
+                star.classList.add('selected');
+            } else {
+                star.classList.remove('selected');
+            }
         });
     }
 });
