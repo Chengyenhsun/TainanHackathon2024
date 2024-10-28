@@ -1,0 +1,105 @@
+body {
+    font-family: Arial, sans-serif;
+    color: #5a5757;
+    margin: 1.25em;
+    height: 100vh; 
+    display: flex;
+    flex-direction: column; 
+    font-size: 1em;
+}
+
+.search-container {
+    text-align: center;
+    background-color: #134984;
+    padding: 1em;
+}
+
+.search-container h1 {
+    color: white;
+    font-size: 2.2em;
+    margin: 0;
+}
+
+.main-content {
+    display: flex; 
+    flex: 1; 
+    overflow: hidden; 
+}
+
+.left-panel {
+    flex: 1; 
+    max-width: 25%; 
+    padding: 1em;
+    background-color: #ffffff;
+    overflow-y: auto;
+    border-right: 0.0625em solid #ccc;
+}
+
+.right-panel {
+    flex: 3; 
+    padding: 1em;
+    margin-left: 1em;
+    margin-top: 1.25em;
+    overflow-y: auto;
+    background-color: transparent;
+    border: 0.0625em solid #ccc;
+    border-radius: 0.35em; 
+}
+
+.filter-box {
+    margin: 1.25em 0; 
+    padding: 0.625em;
+    border: 0.0625em solid #ddd;
+    border-radius: 0.3125em; 
+    background-color: #f8f9fa;
+}
+
+.filter-title {
+    font-size: 1.25em; 
+    font-weight: bold;
+    margin-bottom: 0.625em; 
+    display: flex;
+}
+
+.filter-options label {
+    display: block; 
+    margin: 0.3125em 0; 
+    font-size: 1em;
+}
+
+input[type="checkbox"] {
+    width: 1.3em;  
+    height: 1.3em; 
+    transform: scale(1.3); 
+    margin-right: 0.5em;
+}
+
+.custom-text {
+    font-size: 1.5em;; 
+    color: darkblue; 
+    white-space: nowrap; 
+    text-align: center; 
+    background-color: transparent;
+    padding: 0.3125em;
+    box-shadow: 0 0 0.3125em rgba(0, 0, 0, 0.5); 
+}
+
+.search-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25em;
+}
+
+.search-button {
+    background-color: #134984;
+    color: white;
+    font-size: 1.25em;
+    padding: 0.35em 2.5em;
+    border: none;
+    border-radius: 0.3125em;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #0b3a68;
+}
