@@ -4,7 +4,8 @@ import folium
 
 app = FastAPI()
 
-app.mount("/", StaticFiles(directory="ProjectFiles", html=True), name="static")
+# 移除了 name="static"
+app.mount("/", StaticFiles(directory="ProjectFiles", html=True))
 
 
 @app.get("/")
