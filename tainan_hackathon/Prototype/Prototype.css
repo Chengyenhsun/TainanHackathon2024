@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     color: #5a5757;
-    margin: 20px;
+    margin: 1.25em;
     height: 100vh; 
     display: flex;
     flex-direction: column; 
@@ -61,8 +61,6 @@ body {
     padding: 0.625em;
     margin-left: 1.25em;
     padding: 1.25em;
-/*    display: flex;
-    flex-direction: column; */
     overflow-y: auto;
     background-color: transparent;
     border: none;
@@ -72,7 +70,7 @@ body {
 .filter-box {
     margin: 1.25em 0; 
     padding: 0.625em;
-    border: 1px solid #ddd;
+    border: 0.0625em solid #ddd;
     border-radius: 0.3125em; 
     background-color: #f8f9fa;
 }
@@ -142,9 +140,11 @@ body {
     padding-left: 1.25em;
     padding-right: 1.25em;
     background-color: #f8f9fa;
-    border: 1px solid #ddd;
+    border: 0.0625em solid #ddd;
     border-radius: 0.3125em; 
     flex: 1; 
+    position: relative;  /* add */
+    padding-bottom: 8em; /* add */
 }
 
 #result h2 {
@@ -155,7 +155,7 @@ body {
     display: flex;
     align-items: stretch;
     margin-bottom: 1.25em;
-    border: 1px solid #3f3a3a; 
+    border: 0.0625em solid #3f3a3a; 
     border-radius: 0.3125em; 
 }
 
@@ -209,14 +209,81 @@ body {
     text-decoration: underline;
 }
 
-input[type="checkbox"] { /* checkbox size*/
+
+/* add */
+input[type="checkbox"] { 
     width: 1.3em;  
     height: 1.3em; 
     transform: scale(1.3); 
     margin-right: 0.5em;
 }
 
-.place-item-loading{
-    height: 1.2em;
-    margin-left: 0.5em;
+.place-item-loading{  
+    font-size: 2em; 
+    margin-top: 0.1em; 
+    color: #333; 
+}
+
+.hashtag-response {  
+    font-size: 1.2em; 
+}
+
+.confirm-container {
+    position: absolute;  
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;   
+}
+
+#confirm-button {
+    padding: 0.8em 1.5em;
+    background-color: #e99a33;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#confirm-button:hover {
+    background-color: #e99a33;
+}
+
+.confirm-btn-style {
+    padding: 0.625em 1.25em;
+    position: absolute;
+    bottom: 5.5em;
+    right: 1.5em;
+    font-size: 1em;
+    background-color:#e99a33;
+    color: white;
+    border: none;
+    border-radius: 0.3125em; 
+    cursor: pointer;
+    margin-top: 1.5em;
+}
+
+.confirm-btn-style:active {
+    background-color: #bd7416;
+    transform: scale(0.95);
+}
+
+.add-folder-btn-style {
+    font-size: 1em;
+    position: absolute;
+    bottom: 1.5em; 
+    right: 1.5em;
+    background-color: #2196F3;
+    color: white;
+    padding: 0.625em 1.25em;
+    border: none;
+    border-radius: 0.3125em; 
+    cursor: pointer;
+}
+
+.add-folder-btn-style:hover {
+    background-color: #0b7dda;
+}
+
+.add-folder-btn-style:active {
+    background-color: #095a9e;
+    transform: scale(0.95);
 }
