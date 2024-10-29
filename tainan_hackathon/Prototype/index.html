@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="Prototype.css">
-    <title>搜尋地圖上的資料</title>
+    <title>主題地圖</title>
 </head>
 <body>
     <div class="search-container">
@@ -37,7 +37,7 @@
             </div>
 
             <div class="filter-box">
-                <div class="filter-title">區域</div>
+                <div class="filter-title">熱門區域</div>
                 <div class="filter-options">
                     <label><input type="checkbox" value="中西區"> 中西區</label>
                     <label><input type="checkbox" value="東區"> 東區</label>
@@ -70,5 +70,7 @@
     </div>
 
     <script src="Prototype.js"></script>
+    <script type="module" src="Database.js"></script>
+<!--<script src="https://unpkg.com/@supabase/supabase-js"></script>-->    
 </body>
 </html>

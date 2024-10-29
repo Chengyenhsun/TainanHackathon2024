@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     color: #5a5757;
-    margin: 1.25em;
+    margin: 20px;
     height: 100vh; 
     display: flex;
     flex-direction: column; 
@@ -61,6 +61,8 @@ body {
     padding: 0.625em;
     margin-left: 1.25em;
     padding: 1.25em;
+/*    display: flex;
+    flex-direction: column; */
     overflow-y: auto;
     background-color: transparent;
     border: none;
@@ -70,7 +72,7 @@ body {
 .filter-box {
     margin: 1.25em 0; 
     padding: 0.625em;
-    border: 0.0625em solid #ddd;
+    border: 1px solid #ddd;
     border-radius: 0.3125em; 
     background-color: #f8f9fa;
 }
@@ -140,11 +142,11 @@ body {
     padding-left: 1.25em;
     padding-right: 1.25em;
     background-color: #f8f9fa;
-    border: 0.0625em solid #ddd;
+    border: 1px solid #ddd;
     border-radius: 0.3125em; 
     flex: 1; 
-    position: relative;  /* add */
-    padding-bottom: 8em; /* add */
+    position: relative;
+    padding-bottom: 8em;
 }
 
 #result h2 {
@@ -155,7 +157,7 @@ body {
     display: flex;
     align-items: stretch;
     margin-bottom: 1.25em;
-    border: 0.0625em solid #3f3a3a; 
+    border: 1px solid #3f3a3a; 
     border-radius: 0.3125em; 
 }
 
@@ -209,8 +211,6 @@ body {
     text-decoration: underline;
 }
 
-
-/* add */
 input[type="checkbox"] { 
     width: 1.3em;  
     height: 1.3em; 
@@ -224,8 +224,15 @@ input[type="checkbox"] {
     color: #333; 
 }
 
-.hashtag-response {  
-    font-size: 1.2em; 
+.hashtag-response {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.hashtag {  
+    font-size: 1em; 
 }
 
 .confirm-container {

@@ -1,23 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const searchBtn = document.getElementById("search-btn");
+    
+    const confirmBtn = document.getElementById("confirm-btn");
 
-    searchBtn.addEventListener("click", async function () {
-        const selectedAreas = [];
+    confirmBtn.addEventListener("click", async function () {
         const selectedFoods = [];
 
-        // 一次遍歷區域與美食的選項
         document.querySelectorAll(".filter-options input[type='checkbox']:checked").forEach(function (checkbox) {
             const value = checkbox.value;
-            // 根據選項是區域還是美食分類
-            if (["中西區", "東區", "北區", "南區", "永康區", "安平區"].includes(value)) {
-                selectedAreas.push(value);
-            } else {
-                selectedFoods.push(value);
-            }
+            selectedFoods.push(value);
         });
 
         const requestData = {
-            areas: selectedAreas,
             foods: selectedFoods
         };
 
@@ -32,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (response.ok) {
                 // 重新加載地圖
-                document.getElementById("map-frame").src = "/map.html";
+                document.querySelector("iframe").src = "/Home/map.html";
             } else {
                 console.error("搜尋請求失敗");
             }

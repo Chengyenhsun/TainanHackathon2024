@@ -6,11 +6,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     updateDistanceValue(slider.value);
 
-
     slider.oninput = function () {
         updateDistanceValue(this.value);
     };
-
  
     stars.forEach((star, index) => {
         star.addEventListener('mouseover', () => {
@@ -33,17 +31,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function updateDistanceValue(value) {
-        output.innerText = `${value} km`
+        output.innerText = `${value} km`;
     }
 
 
     async function handleSearch() {
         const searchword = document.getElementById("searchword").value;
         const searchdistance = slider.value;
+        const selectedAreas = Array.from(document.querySelectorAll('.filter-options input:checked'))
+                               .map(checkbox => checkbox.value);
 
         console.log('searchword:', searchword);
         console.log('searchdistance:', searchdistance);
         console.log('selectedRating:', selectedRating);
+        console.log('selectedAreas:', selectedAreas);
 
         try {
             const response = await fetch("/search", {
@@ -51,18 +52,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ searchword, searchdistance, selectedRating })
+                body: JSON.stringify({ searchword, searchdistance, selectedRating, selectedAreas })
             });
 
             if (response.ok) {
                 const data = await response.text();
                 const Data = data.replace(/^"(.*)"$/, '$1');
                 document.getElementById("result").innerHTML = "<h2>搜尋結果：</h2>"+Data;
-
-
-
-
-                // ===== new ===== //
+            
                 const placeItemNames = document.querySelectorAll('.place-item-name');
                 if (placeItemNames.length > 0) {
                 createConfirmButton();
@@ -79,50 +76,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                     createAddToFolderButton();
                 });
-
-                placeItemNames.forEach(function (element) {
-                    element.addEventListener('click', async function () {
-                        const loadingElement = document.createElement('div');
-                        loadingElement.className = 'place-item-loading';
-                        let currentDots = 2;
-
-                        // dynamic loading
-                        const interval = setInterval(() => {
-                            loadingElement.innerText = '.'.repeat(currentDots); 
-                            if (currentDots < 6) {
-                                currentDots++;
-                            } else {
-                                currentDots = 2; 
-                            }
-                        }, 500); 
-                        const ratingElement = element.closest('.place-item').querySelector('.place-item-rating');
-                        ratingElement.parentNode.insertBefore(loadingElement, ratingElement.nextSibling);
-
-                        // Send a request to get related words
-                        const hashtagResponse = await fetch("/hashtag", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ searchword, reviewsnum: 100 })
-                        });
-                        const hashtagData = await hashtagResponse.text();
-                        if (hashtagResponse.ok) {
-                            clearInterval(interval); 
-                            loadingElement.innerText = hashtagData; 
-                            loadingElement.classList.remove('place-item-loading');
-                            loadingElement.classList.add('hashtag-response');
-                        } else {
-                            clearInterval(interval); 
-                            loadingElement.classList.remove('place-item-loading');
-                            loadingElement.classList.add('hashtag-response');
-                            loadingElement.innerText = 'Unable to obtain';
-                        }
-                    });
-                });
-
-                // ===== end new ===== // 
-                        
 
             } else {
                 const errorData = await response.json();
@@ -159,8 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-
-
+    
     function highlightStars(index) {
         stars.forEach((star, i) => {
             if (i <= index) {
@@ -171,3 +123,58 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+const container = document.getElementById('result');
+
+container.addEventListener('click', async function(event) {
+    if (event.target.classList.contains('place-item-name')) {
+        const selectedItem = event.target.textContent;
+        console.log(selectedItem);
+
+        const loadingElement = document.createElement('div');
+        loadingElement.className = 'place-item-loading';
+        
+        // 找到place-item-rating並插入loadingElement在其下面
+        const ratingElement = event.target.closest('.place-item').querySelector('.place-item-rating');
+        ratingElement.parentNode.insertBefore(loadingElement, ratingElement.nextSibling);
+
+        let currentDots = 2;
+
+        // dynamic loading
+        const interval = setInterval(() => {
+            loadingElement.innerText = '.'.repeat(currentDots); 
+            currentDots = (currentDots < 6) ? currentDots + 1 : 2;
+        }, 500); 
+
+        try {
+            const response = await fetch("/hashtag", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ searchword: selectedItem, reviewsnum: 50 })
+            });
+
+            clearInterval(interval);
+            
+            if (response.ok) {
+                const data = await response.text();
+                const Data = data.replace(/^"(.*)"$/, '$1');
+                loadingElement.innerHTML = Data; 
+                loadingElement.classList.remove('place-item-loading');
+                loadingElement.classList.add('hashtag-response');
+            } else {
+                loadingElement.innerText = 'Unable to obtain';
+                loadingElement.classList.remove('place-item-loading');
+                loadingElement.classList.add('hashtag-response');
+            }
+        } catch (error) {
+            console.error("Error during fetch:", error);
+            clearInterval(interval);
+            loadingElement.innerText = '發生錯誤！';
+            loadingElement.classList.remove('place-item-loading');
+            loadingElement.classList.add('hashtag-response');
+        }
+    }
+});
+
