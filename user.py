@@ -5,19 +5,8 @@ from fastapi.responses import JSONResponse
 import logging
 
 app = FastAPI()
-
-# 將靜態文件夾 ProjectFiles 挂載到根目錄
 app.mount("/Home", StaticFiles(directory="ProjectFiles", html=True))
-
-# 設定日誌級別
 logging.basicConfig(level=logging.INFO)
-
-# 店家資料（店名與座標）
-beef_soup_stores = {
-    "永樂牛肉湯": [22.997780586622824, 120.1987674364872],
-    "新鮮牛肉湯(東門店)": [22.98623509535712, 120.22139604018476],
-    "億哥牛肉湯": [22.98853061429865, 120.23443586300858],
-}
 
 
 @app.get("/")
@@ -28,35 +17,44 @@ async def read_root():
 @app.post("/search")
 async def search(request: Request):
     logging.info("Received a request to /search")
-    data = await request.json()
+    stores = await request.json()
 
-    # 檢查是否勾選了“牛肉湯”
-    if "牛肉湯" in data.get("foods", []):
-        # 創建並更新地圖
-        create_map(beef_soup_stores)
-        return JSONResponse(content=beef_soup_stores)
+    store_data = {}
+    for store in stores:
+        store_name = store["store_name"]
+        coordinates = store["coordinates"]
+        store_data[store_name] = coordinates
 
-    return JSONResponse(content={"message": "錯誤的請求"}, status_code=400)
+    create_map(store_data)
+    return JSONResponse(content=store_data)
 
 
 def create_map(store_data):
-    # 台南火車站的座標
     tainan_train_station_coords = [22.997212, 120.212319]
-
-    # 創建地圖
     m = folium.Map(location=tainan_train_station_coords, zoom_start=14)
 
-    # 添加店家標記
+    # 為每個商店添加標記
     for store, coords in store_data.items():
+        # 添加主要標記
         folium.Marker(
             location=coords,
-            popup=store,
             icon=folium.Icon(icon="glyphicon glyphicon-cutlery", color="red"),
+            popup=store,  # 使用 popup 顯示店名
         ).add_to(m)
 
-    # 保存地圖
+        # 添加顯示店名的標記
+        folium.Marker(
+            location=[coords[0] - 0.0001, coords[1]],
+            icon=folium.DivIcon(
+                html=f"""
+                <div style="font-size: 1.5em; font-weight: bold; text-align: center; white-space: nowrap;">
+                    {store}
+                </div>
+                """
+            ),
+        ).add_to(m)
+
     m.save("ProjectFiles/map.html")
 
 
-# 創建初始地圖
 create_map({})
