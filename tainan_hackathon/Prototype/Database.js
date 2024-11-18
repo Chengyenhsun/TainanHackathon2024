@@ -8,7 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 async function insertData(name, lat, lng, photo_url, rating, user_ratings_total, business_status) {
     try {
         const { data, error } = await supabase
-            .from('牛肉湯') // 確認這是正確的資料表名稱
+            .from('牛肉湯') 
             .insert([
                 {
                     store_name: name,

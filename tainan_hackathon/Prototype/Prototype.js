@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     slider.oninput = function () {
         updateDistanceValue(this.value);
     };
- 
+
     stars.forEach((star, index) => {
         star.addEventListener('mouseover', () => {
             highlightStars(index);
@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    
     document.getElementById("searchbtn").onclick = handleSearch;
 
 
@@ -56,13 +55,14 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             if (response.ok) {
-                const data = await response.text();
+                //const data = await response.text();
+                const data = await response.json();
                 const Data = data.replace(/^"(.*)"$/, '$1');
                 document.getElementById("result").innerHTML = "<h2>搜尋結果：</h2>"+Data;
             
                 const placeItemNames = document.querySelectorAll('.place-item-name');
                 if (placeItemNames.length > 0) {
-                createConfirmButton();
+                    createConfirmButton();
                 }
                 
                 const confirmButton = document.getElementById("confirm-btn");
@@ -91,24 +91,67 @@ document.addEventListener("DOMContentLoaded", function () {
     // New Confirm Button //
     function createConfirmButton() {
         const resultContainer = document.getElementById("result");
-        const confirmButton = document.createElement("button");
-        confirmButton.id = "confirm-btn";
-        confirmButton.innerText = "確認";
-        confirmButton.classList.add("confirm-btn-style");
-        resultContainer.appendChild(confirmButton);
-    }  
-    
+
+        let confirmButton = resultContainer.querySelector("#confirm-btn");
+        if (!confirmButton) {
+            confirmButton = document.createElement("button");
+            confirmButton.id = "confirm-btn";
+            confirmButton.innerText = "確認";
+            confirmButton.classList.add("confirm-btn-style");
+            resultContainer.appendChild(confirmButton);
+            
+            confirmButton.addEventListener("click", handleConfirmClick);
+        }
+    } 
+
+    let addToFolderButton;  
+    let inputField;  
+
+
+    function handleConfirmClick(event) {
+        console.log("已確認，保留勾選項目");
+
+        // 取得所有的店家項目，隱藏未勾選的項目
+        const checkboxes = document.querySelectorAll('.place-check input[type="checkbox"]');
+        checkboxes.forEach(function(checkbox) {
+            const placeItem = checkbox.closest('.place-item');
+            if (!checkbox.checked) {
+                placeItem.style.display = 'none'; // 隱藏未勾選項目
+            }
+        });
+
+        // 確保在"確認"後生成加入資料夾的按鈕和輸入框
+        createAddToFolderButton();
+    }
+
+
     // New AddToFolderButton //
     function createAddToFolderButton() {
         const resultContainer = document.getElementById("result");
-        const addToFolderButton = document.createElement("button");
-        addToFolderButton.id = "add-folder-btn";
-        addToFolderButton.innerText = "確認，加入資料夾";
-        addToFolderButton.classList.add("add-folder-btn-style");
-        resultContainer.appendChild(addToFolderButton);
+
+        if (!inputField) {
+            inputField = document.createElement("input");
+            inputField.type = "text";
+            inputField.placeholder = "輸入資料夾名稱";
+            inputField.classList.add("input-folder-name");
+            resultContainer.appendChild(inputField);
+        }
+
+        if (!addToFolderButton) {
+            addToFolderButton = document.createElement("button");
+            addToFolderButton.id = "add-folder-btn";
+            addToFolderButton.innerText = "確認，加入資料夾";
+            addToFolderButton.classList.add("add-folder-btn-style");
+            resultContainer.appendChild(addToFolderButton);
+        }
 
         addToFolderButton.addEventListener("click", function() {
-            console.log("將選定的項目加入資料夾");
+            const folderName = inputField.value.trim();
+            if (folderName) {
+                console.log(`將選定的項目加入資料夾：${folderName}`);
+            } else {
+                console.log("請輸入資料夾名稱");
+            }
         });
     }
 
@@ -131,12 +174,17 @@ container.addEventListener('click', async function(event) {
         const selectedItem = event.target.textContent;
         console.log(selectedItem);
 
-        const loadingElement = document.createElement('div');
-        loadingElement.className = 'place-item-loading';
-        
-        // 找到place-item-rating並插入loadingElement在其下面
         const ratingElement = event.target.closest('.place-item').querySelector('.place-item-rating');
-        ratingElement.parentNode.insertBefore(loadingElement, ratingElement.nextSibling);
+        let loadingElement = ratingElement.parentNode.querySelector('.place-item-loading, .hashtag-response');
+
+        if (!loadingElement) {
+            loadingElement = document.createElement('div');
+            loadingElement.className = 'place-item-loading';
+            ratingElement.parentNode.insertBefore(loadingElement, ratingElement.nextSibling);
+        } else {
+            loadingElement.innerText = '';
+            loadingElement.className = 'place-item-loading';
+        }
 
         let currentDots = 2;
 
@@ -177,4 +225,3 @@ container.addEventListener('click', async function(event) {
         }
     }
 });
-
