@@ -86,6 +86,20 @@ body {
     width: 80%; 
     margin-right: 0.625em;
     color: #6193c9;
+    margin-bottom: 2em;
+}
+
+#numslider {
+    width: 80%; 
+    margin-right: 0.625em;
+    color: #6193c9;
+    margin-bottom: 2em;
+}
+
+#reviewslider {
+    width: 80%; 
+    margin-right: 0.625em;
+    color: #6193c9;
 }
 
 .filter-title-star {
@@ -293,4 +307,25 @@ input[type="checkbox"] {
 .add-folder-btn-style:active {
     background-color: #095a9e;
     transform: scale(0.95);
+}
+
+.input-folder-name {
+    padding: 0.625em;
+    font-size: 1em; 
+    margin-right: 0.8em;
+    margin-bottom: 1.5em;
+}
+
+.see-all-btn {
+    flex: 1;
+    width: 100%;
+    padding: 0.625em 1.25em;
+    bottom: 5.5em;
+    right: 1.5em;
+    font-size: 1em;
+    background-color:#e99a33;
+    color: white;
+    border: none;
+    border-radius: 0.3125em; 
+    cursor: pointer;
 }

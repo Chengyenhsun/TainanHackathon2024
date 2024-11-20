@@ -21,6 +21,17 @@
                     <input type="range" id="distanceslider" min="0" max="40" value="20">
                     <span id="distancevalue">20 km</span>
                 </div>
+                <div class="filter-title">搜尋店家數</div>
+                <div class="slider-container">
+                    <input type="range" id="numslider" min="0" max="50" value="20">
+                    <span id="numvalue">20 家</span>
+                </div>
+
+                <div class="filter-title">評論時長</div>
+                <div class="slider-container">
+                    <input type="range" id="reviewslider" min="1" max="4" value="2">
+                    <span id="reviewvalue">2 年</span>
+                </div>
             </div>
 
             <div class="filter-box">
@@ -58,6 +69,11 @@
                     <label><input type="checkbox" value="飲料店"> 飲料店</label>
                 </div>
             </div>
+
+            <a href="http://localhost:8000/Review-all/" target="_blank">
+                <button class="see-all-btn">查看全部</button>
+            </a>
+
         </div>
 
         <div class="right-panel">
@@ -69,7 +85,7 @@
         </div>
     </div>
 
-    <script src="Prototype.js"></script>
+    <script type="module" src="Prototype.js"></script>
     <script type="module" src="Database.js"></script>
 <!--<script src="https://unpkg.com/@supabase/supabase-js"></script>-->    
 </body>

@@ -1,13 +1,39 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabaseUrl = 'https://ocrstydcjvxqbhjmxwnb.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcnN0eWRjanZ4cWJoam14d25iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxOTI3MTAsImV4cCI6MjA0NTc2ODcxMH0.ZupOGBcMk73nP8IMxbAUqzTx-weHM9RxmU48v-Tzpaw'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
 document.addEventListener("DOMContentLoaded", function () {
     const stars = document.querySelectorAll('.star');
     let selectedRating = 0;
+
+    let addToFolderButton;
+    let inputField;
+
     const slider = document.getElementById("distanceslider");
     const output = document.getElementById("distancevalue");
 
+    const numslider = document.getElementById("numslider");
+    const numoutput = document.getElementById("numvalue");
+
+    const reviewslider = document.getElementById("reviewslider");
+    const reviewoutput = document.getElementById("reviewvalue");
+
     updateDistanceValue(slider.value);
+    updateNumValue(numslider.value);
+    updateReviewValue(reviewslider.value);
 
     slider.oninput = function () {
         updateDistanceValue(this.value);
+    };
+
+    numslider.oninput = function () {
+        updateNumValue(this.value);
+    };
+
+    reviewslider.oninput = function () {
+        updateReviewValue(this.value);
     };
 
     stars.forEach((star, index) => {
@@ -26,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    
     document.getElementById("searchbtn").onclick = handleSearch;
 
 
@@ -33,17 +60,27 @@ document.addEventListener("DOMContentLoaded", function () {
         output.innerText = `${value} km`;
     }
 
+    function updateNumValue(value) {
+        numoutput.innerText = `${value} 家`;
+    }
+
+    function updateReviewValue(value) {
+        reviewoutput.innerText = `${value} 年`;
+    }
+
 
     async function handleSearch() {
         const searchword = document.getElementById("searchword").value;
         const searchdistance = slider.value;
         const selectedAreas = Array.from(document.querySelectorAll('.filter-options input:checked'))
-                               .map(checkbox => checkbox.value);
+                                                                .map(checkbox => checkbox.value);
+        const MaxItemNum = numslider.value;
 
         console.log('searchword:', searchword);
         console.log('searchdistance:', searchdistance);
         console.log('selectedRating:', selectedRating);
         console.log('selectedAreas:', selectedAreas);
+        console.log('searchMaxNum:', MaxItemNum)
 
         try {
             const response = await fetch("/search", {
@@ -51,12 +88,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ searchword, searchdistance, selectedRating, selectedAreas })
+                body: JSON.stringify({ searchword, searchdistance, selectedRating, selectedAreas, MaxItemNum })
             });
 
             if (response.ok) {
-                //const data = await response.text();
-                const data = await response.json();
+                const data = await response.text();
                 const Data = data.replace(/^"(.*)"$/, '$1');
                 document.getElementById("result").innerHTML = "<h2>搜尋結果：</h2>"+Data;
             
@@ -88,7 +124,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // New Confirm Button //
     function createConfirmButton() {
         const resultContainer = document.getElementById("result");
 
@@ -99,36 +134,28 @@ document.addEventListener("DOMContentLoaded", function () {
             confirmButton.innerText = "確認";
             confirmButton.classList.add("confirm-btn-style");
             resultContainer.appendChild(confirmButton);
-            
+
             confirmButton.addEventListener("click", handleConfirmClick);
         }
-    } 
+    }
 
-    let addToFolderButton;  
-    let inputField;  
-
-
-    function handleConfirmClick(event) {
+    function handleConfirmClick() {
         console.log("已確認，保留勾選項目");
 
-        // 取得所有的店家項目，隱藏未勾選的項目
         const checkboxes = document.querySelectorAll('.place-check input[type="checkbox"]');
-        checkboxes.forEach(function(checkbox) {
+        checkboxes.forEach(checkbox => {
             const placeItem = checkbox.closest('.place-item');
             if (!checkbox.checked) {
-                placeItem.style.display = 'none'; // 隱藏未勾選項目
+                placeItem.style.display = 'none';
             }
         });
 
-        // 確保在"確認"後生成加入資料夾的按鈕和輸入框
         createAddToFolderButton();
     }
 
-
-    // New AddToFolderButton //
     function createAddToFolderButton() {
         const resultContainer = document.getElementById("result");
-
+        console.log('createAddtoFolderBtn');
         if (!inputField) {
             inputField = document.createElement("input");
             inputField.type = "text";
@@ -143,16 +170,54 @@ document.addEventListener("DOMContentLoaded", function () {
             addToFolderButton.innerText = "確認，加入資料夾";
             addToFolderButton.classList.add("add-folder-btn-style");
             resultContainer.appendChild(addToFolderButton);
+
+            addToFolderButton.addEventListener("click", handleAddToFolder);
+        }
+    }
+
+    async function handleAddToFolder() {
+        const folderName = inputField.value.trim();
+        if (!folderName) {
+            console.log("請輸入資料夾名稱");
+            return;
         }
 
-        addToFolderButton.addEventListener("click", function() {
-            const folderName = inputField.value.trim();
-            if (folderName) {
-                console.log(`將選定的項目加入資料夾：${folderName}`);
-            } else {
-                console.log("請輸入資料夾名稱");
-            }
+        const checkboxes = document.querySelectorAll('.place-check input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) {
+            console.log("請選擇至少一個店家");
+            return;
+        }
+
+        const selectedPlaces = Array.from(checkboxes).map(checkbox => {
+            const placeItem = checkbox.closest('.place-item');
+            const placeNameElement = placeItem.querySelector('.place-item-name');
+            
+            return {
+                store_name: placeNameElement.getAttribute('data-name') || null,
+                coordinates: `(${parseFloat(placeNameElement.getAttribute('data-lat')) || null}, ${parseFloat(placeNameElement.getAttribute('data-lng')) || null})`, // 組合 lat, lng
+                photo_url: placeNameElement.getAttribute('data-photo_url') || null,
+                rating: parseFloat(placeNameElement.getAttribute('data-rating')) || null,
+                user_ratings_total: parseInt(placeNameElement.getAttribute('data-user_ratings_total'), 10) || null,
+                business_status: placeNameElement.getAttribute('data-status') || null,
+            };
         });
+
+        console.log(`將選定的項目加入資料夾：${folderName}`, selectedPlaces);
+
+        try {
+            const { data, error } = await supabase
+                .from(folderName) 
+                .insert(selectedPlaces);
+    
+            if (error) {
+                console.error('Error inserting data:', error);
+                return;
+            }
+    
+            console.log('Data inserted:', data);
+        } catch (error) {
+            console.error('Unexpected error:', error);
+        }
     }
 
     
@@ -172,6 +237,7 @@ const container = document.getElementById('result');
 container.addEventListener('click', async function(event) {
     if (event.target.classList.contains('place-item-name')) {
         const selectedItem = event.target.textContent;
+        const userRatingsTotal = event.target.getAttribute('data-user_ratings_total');
         console.log(selectedItem);
 
         const ratingElement = event.target.closest('.place-item').querySelector('.place-item-rating');
@@ -200,7 +266,7 @@ container.addEventListener('click', async function(event) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ searchword: selectedItem, reviewsnum: 50 })
+                body: JSON.stringify({ searchword: selectedItem, reviewsnum: userRatingsTotal })
             });
 
             clearInterval(interval);
