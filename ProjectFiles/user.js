@@ -1,48 +1,79 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const supabaseUrl = 'https://ocrstydcjvxqbhjmxwnb.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcnN0eWRjanZ4cWJoam14d25iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxOTI3MTAsImV4cCI6MjA0NTc2ODcxMH0.ZupOGBcMk73nP8IMxbAUqzTx-weHM9RxmU48v-Tzpaw';  // 替換為你自己的 Supabase 金鑰
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = 'https://ocrstydcjvxqbhjmxwnb.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcnN0eWRjanZ4cWJoam14d25iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxOTI3MTAsImV4cCI6MjA0NTc2ODcxMH0.ZupOGBcMk73nP8IMxbAUqzTx-weHM9RxmU48v-Tzpaw'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
-// 從 Supabase 讀取資料庫中的店家數據
-async function fetchStoreData() {
+let selectedRating = 0; // 保存用戶選擇的星等
+
+// 星等選擇功能
+document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('.star'); 
+    stars.forEach((star, index) => {
+        star.addEventListener('mouseover', () => highlightStars(index));
+        star.addEventListener('mouseout', () => highlightStars(selectedRating - 1));
+        star.addEventListener('click', () => {
+            selectedRating = index + 1;
+            highlightStars(index);
+            console.log('選擇的星等:', selectedRating);
+        });
+    });
+
+    function highlightStars(index) {
+        stars.forEach((star, i) => {
+            star.classList.toggle('selected', i <= index);
+        });
+    }
+});
+
+// 從 Supabase 資料庫中獲取店家數據
+async function fetchStoreData(selectedFoods) {
     const { data, error } = await supabase
-        .from('test')
-        .select('store_name, coordinates');
+        .from('牛肉湯')
+        .select('store_name, coordinates')
+        .gte('rating', selectedRating); // 根據星等過濾
 
     if (error) {
         console.error('Error fetching store data:', error);
         return [];
-    } else {
-        console.log('Store data fetched:', data);
-        return data;
     }
+
+    // 處理 coordinates 字串為數字格式
+    const processedData = data.map(store => {
+        const coordinates = store.coordinates
+            .replace(/[()]/g, '')  // 去除括號
+            .split(', ')  // 根據逗號分割
+            .map(coord => parseFloat(coord));  // 轉換為浮點數
+
+        return { ...store, coordinates };
+    });
+
+    console.log('獲取的店家數據:', processedData);
+    return processedData;
 }
 
-// 將資料傳遞給後端 FastAPI
+// 傳送數據到後端
 async function sendStoreDataToServer(stores) {
     try {
-        const response = await fetch("/search", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+        const response = await fetch('/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(stores)
         });
 
         if (response.ok) {
-            console.log("店家資料已傳送並更新地圖");
+            console.log('成功更新地圖');
             // 重新加載地圖
-            document.querySelector("iframe").src = "/Home/map.html";
+            document.querySelector('iframe').src = '/Home/map.html?' + new Date().getTime();  // 加上時間戳強制重新載入
         } else {
-            console.error("傳送店家資料失敗");
+            console.error('更新地圖失敗');
         }
     } catch (error) {
-        console.error("傳送店家資料時出錯:", error);
+        console.error('傳送數據至後端時出錯:', error);
     }
 }
 
-// 監聽確認按鈕的點擊事件
+
 document.addEventListener("DOMContentLoaded", function () {
     const confirmBtn = document.getElementById("confirm-btn");
 
@@ -65,16 +96,21 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // 監聽地圖中的點擊事件
-    document.querySelector("iframe").addEventListener("load", function() {
+    // 監聽地圖中的點擊事件，這裡改為直接在 fastapi 生成的地圖頁面中處理
+    document.querySelector("iframe").addEventListener("load", function () {
         const mapFrame = this.contentWindow;
 
-        // 假設使用了 jQuery 來簡化事件處理
-        $(mapFrame.document).on('click', '.leaflet-popup-content', function(event) {
-            const storeName = $(this).text();  // 取得商店名稱
-            const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${storeName}`;
-            window.open(googleMapsUrl, '_blank');  // 跳轉至 Google Maps
+        // 直接使用 leaflet 來處理點擊 popup
+        mapFrame.L.DomEvent.on(mapFrame.document, 'click', function (event) {
+            if (event.target && event.target.classList.contains('leaflet-popup-content')) {
+                const storeName = event.target.innerText.trim();
+                if (storeName) {
+                    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(storeName)}`;
+                    window.open(googleMapsUrl, '_blank');  // 跳轉至 Google Maps
+                }
+            }
         });
     });
 });
+
 

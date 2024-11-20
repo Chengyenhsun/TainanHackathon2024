@@ -61,6 +61,34 @@ body {
     display: flex;
 }
 
+.star-rating {
+    display: flex;
+    cursor: pointer;
+    justify-content: center; 
+    align-items: center;
+    flex: 1; 
+}
+
+.star {
+    font-size: 1.25em; 
+    margin: 0.1em;
+    justify-content: center; 
+    align-items: center;
+    color: lightgray;
+}
+
+.star:hover {
+    color: gold;
+}
+
+.star.selected {
+    color: gold;
+}
+
+.star.rated {
+    color: #ffcc00;
+    font-size: 1em; 
+}
 .filter-options label {
     display: block; 
     margin: 0.3125em 0; 

@@ -9,6 +9,16 @@ app.mount("/Home", StaticFiles(directory="ProjectFiles", html=True))
 logging.basicConfig(level=logging.INFO)
 
 
+# 初始化初始地圖
+def create_initial_map():
+    tainan_train_station_coords = [22.997212, 120.212319]
+    m = folium.Map(location=tainan_train_station_coords, zoom_start=14)
+    m.save("ProjectFiles/map.html")
+
+
+create_initial_map()  # 初始化時創建地圖
+
+
 @app.get("/")
 async def read_root():
     return {"message": "Hello, World!"}
@@ -33,16 +43,12 @@ def create_map(store_data):
     tainan_train_station_coords = [22.997212, 120.212319]
     m = folium.Map(location=tainan_train_station_coords, zoom_start=14)
 
-    # 為每個商店添加標記
     for store, coords in store_data.items():
-        # 添加主要標記
         folium.Marker(
             location=coords,
             icon=folium.Icon(icon="glyphicon glyphicon-cutlery", color="red"),
-            popup=store,  # 使用 popup 顯示店名
         ).add_to(m)
 
-        # 添加顯示店名的標記
         folium.Marker(
             location=[coords[0] - 0.0001, coords[1]],
             icon=folium.DivIcon(
@@ -55,6 +61,3 @@ def create_map(store_data):
         ).add_to(m)
 
     m.save("ProjectFiles/map.html")
-
-
-create_map({})
