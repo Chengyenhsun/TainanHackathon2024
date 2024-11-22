@@ -5,7 +5,6 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 let selectedRating = 0; // 保存用戶選擇的星等
-let selectedReviewNum = 20; // 保存用戶選擇的評論數，默認 20
 
 // 星等選擇功能
 document.addEventListener('DOMContentLoaded', function () {
@@ -27,18 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// 更新評論數拉條數值
-document.addEventListener('DOMContentLoaded', function () {
-    const reviewNumInput = document.getElementById('reviewnum');
-    const reviewNumDisplay = document.getElementById('reviewnumvalue');
-
-    reviewNumInput.addEventListener('input', function () {
-        selectedReviewNum = parseInt(reviewNumInput.value, 10);
-        reviewNumDisplay.textContent = `${selectedReviewNum} 則`;
-        console.log('選擇的評論數:', selectedReviewNum);
-    });
-});
-
 // 從 Supabase 資料庫中獲取店家數據
 async function fetchStoreDataByCategory(category) {
     const { data, error } = await supabase
@@ -56,7 +43,6 @@ async function fetchStoreDataByCategory(category) {
         .from(category) // 使用選擇的 category 作為資料表名稱
         .select('store_name, coordinates, rating, user_ratings_total')
         .gte('rating', selectedRating) // 根據星等過濾
-        .gte('user_ratings_total', selectedReviewNum); // 根據評論數過濾
 
     if (storeError) {
         console.error('Error fetching store data from Supabase:', storeError);
