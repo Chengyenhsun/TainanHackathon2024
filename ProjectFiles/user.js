@@ -107,20 +107,4 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("未選擇主題美食，無法加載資料");
         }
     });
-
-    // 監聽地圖中的點擊事件，這裡改為直接在 fastapi 生成的地圖頁面中處理
-    document.querySelector("iframe").addEventListener("load", function () {
-        const mapFrame = this.contentWindow;
-
-        // 直接使用 leaflet 來處理點擊 popup
-        mapFrame.L.DomEvent.on(mapFrame.document, 'click', function (event) {
-            if (event.target && event.target.classList.contains('leaflet-popup-content')) {
-                const storeName = event.target.innerText.trim();
-                if (storeName) {
-                    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(storeName)}`;
-                    window.open(googleMapsUrl, '_blank'); // 跳轉至 Google Maps
-                }
-            }
-        });
-    });
 });

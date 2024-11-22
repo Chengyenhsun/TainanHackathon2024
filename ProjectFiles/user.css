@@ -61,6 +61,18 @@ body {
     display: flex;
 }
 
+.slider-container {
+    display: flex;
+    align-items: center;
+}
+
+#reviewnum {
+    width: 80%; 
+    margin-right: 0.625em;
+    color: #6193c9;
+    margin-bottom: 2em;
+}
+
 .star-rating {
     display: flex;
     cursor: pointer;
@@ -89,6 +101,14 @@ body {
     color: #ffcc00;
     font-size: 1em; 
 }
+
+.filter-title-star {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    margin-bottom: 0.625em; 
+}
+
 .filter-options label {
     display: block; 
     margin: 0.3125em 0; 
