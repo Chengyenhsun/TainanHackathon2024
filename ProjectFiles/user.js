@@ -1,14 +1,15 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const supabaseUrl = 'https://ocrstydcjvxqbhjmxwnb.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcnN0eWRjanZ4cWJoam14d25iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxOTI3MTAsImV4cCI6MjA0NTc2ODcxMH0.ZupOGBcMk73nP8IMxbAUqzTx-weHM9RxmU48v-Tzpaw'
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabaseUrl = 'https://ocrstydcjvxqbhjmxwnb.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jcnN0eWRjanZ4cWJoam14d25iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxOTI3MTAsImV4cCI6MjA0NTc2ODcxMH0.ZupOGBcMk73nP8IMxbAUqzTx-weHM9RxmU48v-Tzpaw';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 let selectedRating = 0; // 保存用戶選擇的星等
+let selectedReviewNum = 20; // 保存用戶選擇的評論數，默認 20
 
 // 星等選擇功能
 document.addEventListener('DOMContentLoaded', function () {
-    const stars = document.querySelectorAll('.star'); 
+    const stars = document.querySelectorAll('.star');
     stars.forEach((star, index) => {
         star.addEventListener('mouseover', () => highlightStars(index));
         star.addEventListener('mouseout', () => highlightStars(selectedRating - 1));
@@ -26,24 +27,48 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+// 更新評論數拉條數值
+document.addEventListener('DOMContentLoaded', function () {
+    const reviewNumInput = document.getElementById('reviewnum');
+    const reviewNumDisplay = document.getElementById('reviewnumvalue');
+
+    reviewNumInput.addEventListener('input', function () {
+        selectedReviewNum = parseInt(reviewNumInput.value, 10);
+        reviewNumDisplay.textContent = `${selectedReviewNum} 則`;
+        console.log('選擇的評論數:', selectedReviewNum);
+    });
+});
+
 // 從 Supabase 資料庫中獲取店家數據
-async function fetchStoreData(selectedFoods) {
+async function fetchStoreDataByCategory(category) {
     const { data, error } = await supabase
-        .from('牛肉湯')
-        .select('store_name, coordinates')
-        .gte('rating', selectedRating); // 根據星等過濾
+        .from('title') // 從 title 資料表中查詢
+        .select('title')
+        .eq('title', category); // 依據勾選的類別過濾資料表
 
     if (error) {
-        console.error('Error fetching store data:', error);
+        console.error('Error fetching category data from Supabase:', error);
+        return [];
+    }
+
+    // 根據 category 查詢相對應的資料表
+    const { data: storeData, error: storeError } = await supabase
+        .from(category) // 使用選擇的 category 作為資料表名稱
+        .select('store_name, coordinates, rating, user_ratings_total')
+        .gte('rating', selectedRating) // 根據星等過濾
+        .gte('user_ratings_total', selectedReviewNum); // 根據評論數過濾
+
+    if (storeError) {
+        console.error('Error fetching store data from Supabase:', storeError);
         return [];
     }
 
     // 處理 coordinates 字串為數字格式
-    const processedData = data.map(store => {
+    const processedData = storeData.map(store => {
         const coordinates = store.coordinates
-            .replace(/[()]/g, '')  // 去除括號
-            .split(', ')  // 根據逗號分割
-            .map(coord => parseFloat(coord));  // 轉換為浮點數
+            .replace(/[()]/g, '') // 去除括號
+            .split(', ') // 根據逗號分割
+            .map(coord => parseFloat(coord)); // 轉換為浮點數
 
         return { ...store, coordinates };
     });
@@ -63,8 +88,8 @@ async function sendStoreDataToServer(stores) {
 
         if (response.ok) {
             console.log('成功更新地圖');
-            // 重新加載地圖
-            document.querySelector('iframe').src = '/Home/map.html?' + new Date().getTime();  // 加上時間戳強制重新載入
+            // 強制重新加載地圖，並加上時間戳避免緩存
+            document.querySelector('iframe').src = '/Home/map.html?' + new Date().getTime(); // 加上時間戳強制重新載入
         } else {
             console.error('更新地圖失敗');
         }
@@ -72,7 +97,6 @@ async function sendStoreDataToServer(stores) {
         console.error('傳送數據至後端時出錯:', error);
     }
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
     const confirmBtn = document.getElementById("confirm-btn");
@@ -85,14 +109,16 @@ document.addEventListener("DOMContentLoaded", function () {
             selectedFoods.push(value);
         });
 
-        // 只在選擇了"牛肉湯"時才從資料庫讀取資料
-        if (selectedFoods.includes("牛肉湯")) {
-            const stores = await fetchStoreData();  // 從資料庫獲取店家數據
+        // 根據選擇的主題美食來查詢相對應的資料
+        if (selectedFoods.length > 0) {
+            // 假設只取選擇的第一個主題類別
+            const category = selectedFoods[0];
+            const stores = await fetchStoreDataByCategory(category); // 根據勾選的類別獲取資料
             if (stores.length > 0) {
-                await sendStoreDataToServer(stores);  // 傳送數據到後端
+                await sendStoreDataToServer(stores); // 傳送數據到後端
             }
         } else {
-            console.log("未選擇牛肉湯，無法加載資料");
+            console.log("未選擇主題美食，無法加載資料");
         }
     });
 
@@ -106,11 +132,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 const storeName = event.target.innerText.trim();
                 if (storeName) {
                     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(storeName)}`;
-                    window.open(googleMapsUrl, '_blank');  // 跳轉至 Google Maps
+                    window.open(googleMapsUrl, '_blank'); // 跳轉至 Google Maps
                 }
             }
         });
     });
 });
-
-
