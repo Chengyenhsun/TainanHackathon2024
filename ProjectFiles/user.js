@@ -88,23 +88,57 @@ document.addEventListener("DOMContentLoaded", function () {
     const confirmBtn = document.getElementById("confirm-btn");
 
     confirmBtn.addEventListener("click", async function () {
-        const selectedFoods = [];
+        if (confirmBtn.textContent === "搜尋！") {
+            // 按下搜尋按鈕的邏輯
+            const selectedFoods = [];
+            document.querySelectorAll(".filter-options input[type='checkbox']:checked").forEach(function (checkbox) {
+                selectedFoods.push(checkbox.value);
+            });
 
-        document.querySelectorAll(".filter-options input[type='checkbox']:checked").forEach(function (checkbox) {
-            const value = checkbox.value;
-            selectedFoods.push(value);
-        });
-
-        // 根據選擇的主題美食來查詢相對應的資料
-        if (selectedFoods.length > 0) {
-            // 假設只取選擇的第一個主題類別
-            const category = selectedFoods[0];
-            const stores = await fetchStoreDataByCategory(category); // 根據勾選的類別獲取資料
-            if (stores.length > 0) {
-                await sendStoreDataToServer(stores); // 傳送數據到後端
+            if (selectedFoods.length > 0) {
+                const category = selectedFoods[0];
+                const stores = await fetchStoreDataByCategory(category);
+                if (stores.length > 0) {
+                    await sendStoreDataToServer(stores);
+                }
+            } else {
+                console.log("未選擇主題美食，無法加載資料");
+                return;
             }
-        } else {
-            console.log("未選擇主題美食，無法加載資料");
+
+            // 按鈕變為「重新搜尋」並改變樣式
+            confirmBtn.textContent = "重新搜尋";
+            confirmBtn.classList.add("gray-button");
+        } else if (confirmBtn.textContent === "重新搜尋") {
+            // 按下重新搜尋按鈕的邏輯
+            confirmBtn.textContent = "搜尋！";
+            confirmBtn.classList.remove("gray-button");
+
+            // 重置篩選條件
+            document.querySelectorAll(".filter-options input[type='checkbox']").forEach(function (checkbox) {
+                checkbox.checked = false;
+            });
+
+            // 重置星等選擇
+            selectedRating = 0;
+            highlightStars(-1);
+
+            // 重置地圖
+            await fetch('/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify([])
+            });
+
+            // 重置 iframe 地圖
+            document.querySelector('iframe').src = '/Home/map.html?' + new Date().getTime();
         }
     });
+
+    function highlightStars(index) {
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((star, i) => {
+            star.classList.toggle('selected', i <= index);
+        });
+    }
 });
