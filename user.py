@@ -56,34 +56,23 @@ def create_map(store_data):
         google_maps_url = f"https://www.google.com/maps/search/?api=1&query={store}"
 
         icon_html = f"""
-        <div style="
-            width: 6.75em; 
-            height: 6.75em; 
-            background-image: url('{photo_url}'); 
-            background-size: cover; 
-            background-position: center; 
-            border: 0.225em solid white;
-            box-shadow: 0em 0.25em 0.375em rgba(0, 0, 0, 0.3);
-        "></div>
+        <a href="{google_maps_url}" target="_blank" style="text-decoration: none;">
+            <div style="
+                width: 6.75em; 
+                height: 6.75em; 
+                background-image: url('{photo_url}'); 
+                background-size: cover; 
+                background-position: center; 
+                border: 0.225em solid white;
+                box-shadow: 0em 0.25em 0.375em rgba(0, 0, 0, 0.3);
+            "></div>
+        </a>
         """
 
         # 添加主要標記並附加 JavaScript 事件
         marker = folium.Marker(location=coords, icon=folium.DivIcon(html=icon_html))
         marker.add_to(m)
 
-        # 使用 JavaScript 將標記點擊事件與 Google Maps 連結
-        m.get_root().html.add_child(
-            folium.Element(
-                f"""
-                <script>
-                    var marker = L.marker([{coords[0]}, {coords[1]}]).addTo(m);
-                    marker.on('click', function() {{
-                        window.open('{google_maps_url}', '_blank');
-                    }});
-                </script>
-                """
-            )
-        )
         # 添加顯示店名的標記，並讓其可以直接跳轉
         folium.Marker(
             location=[coords[0], coords[1]],  # 店名標記與圖標保持相同的經緯度
