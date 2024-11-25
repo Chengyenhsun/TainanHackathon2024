@@ -26,6 +26,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+async function fetchAllTitles() {
+    const container = document.querySelector('.table-options');
+    container.innerHTML = ''; 
+
+    const { data, error } = await supabase
+        .from('title')
+        .select('title');
+
+    if (error) {
+        console.error('Error fetching titles from Supabase:', error);
+        container.innerText = '無法獲取分類資料';
+        return;
+    }
+
+    data.forEach(item => {
+        console.log('Got title:', item.title);
+        
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+
+        checkbox.type = 'checkbox';
+        checkbox.value = item.title; 
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(` ${item.title}`));
+        
+        container.appendChild(label);
+    });
+}
+
+
+fetchAllTitles();
 
 async function fetchStoreDataByCategory(category) {
     const { data, error } = await supabase
@@ -85,44 +116,74 @@ async function sendStoreDataToServer(stores) {
 document.addEventListener("DOMContentLoaded", function () {
     const confirmBtn = document.getElementById("confirm-btn");
 
-    confirmBtn.addEventListener("click", async function () {
+    confirmBtn.addEventListener("click", handleConfirmClick);
+
+    function handleConfirmClick() {
         if (confirmBtn.textContent === "搜尋！") {
-            const selectedFoods = [];
-            document.querySelectorAll(".filter-options input[type='checkbox']:checked").forEach(function (checkbox) {
-                selectedFoods.push(checkbox.value);
-            });
-
-            if (selectedFoods.length > 0) {
-                const category = selectedFoods[0];
-                const stores = await fetchStoreDataByCategory(category);
-                if (stores.length > 0) {
-                    await sendStoreDataToServer(stores);
-                }
-            } else {
-                console.log("未選擇主題美食，無法加載資料");
-                return;
-            }
-            confirmBtn.textContent = "重新搜尋";
-            confirmBtn.classList.add("gray-button");
+            handleSearch();
         } else if (confirmBtn.textContent === "重新搜尋") {
-            confirmBtn.textContent = "搜尋！";
-            confirmBtn.classList.remove("gray-button");
-            document.querySelectorAll(".filter-options input[type='checkbox']").forEach(function (checkbox) {
-                checkbox.checked = false;
-            });
-
-            selectedRating = 0;
-            highlightStars(-1);
-
-            await fetch('/search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify([])
-            });
-            
-            document.querySelector('iframe').src = '/Home/map.html?' + new Date().getTime();
+            handleReset();
         }
-    });
+    }
+
+    async function handleSearch() {
+        const selectedFoods = getSelectedFoods();
+
+        console.log(selectedFoods);
+
+        if (selectedFoods.length > 0) {
+            const category = selectedFoods[0];
+            const stores = await fetchStoreDataByCategory(category);
+            if (stores.length > 0) {
+                await sendStoreDataToServer(stores);
+            }
+        } else {
+            console.log("未選擇主題美食，無法加載資料");
+            return;
+        }
+
+        updateConfirmButtonState("重新搜尋", true);
+    }
+
+    async function handleReset() {
+        updateConfirmButtonState("搜尋！", false);
+        resetFilters();
+        await clearMapData();
+        refreshIframe();
+    }
+
+    function getSelectedFoods() {
+        const selectedFoods = [];
+        document.querySelectorAll(".table-options input[type='checkbox']:checked").forEach(function (checkbox) {
+            selectedFoods.push(checkbox.value.split(' ')[0]);
+        });
+        return selectedFoods;
+    }
+
+    function updateConfirmButtonState(text, isGray) {
+        confirmBtn.textContent = text;
+        confirmBtn.classList.toggle("gray-button", isGray);
+    }
+
+    function resetFilters() {
+        document.querySelectorAll(".table-options input[type='checkbox']").forEach(function (checkbox) {
+            checkbox.checked = false;
+        });
+        selectedRating = 0;
+        highlightStars(-1);
+    }
+
+    async function clearMapData() {
+        await fetch('/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify([])
+        });
+    }
+
+    function refreshIframe() {
+        document.querySelector('iframe').src = '/Home/map.html?' + new Date().getTime();
+    }
 
     function highlightStars(index) {
         const stars = document.querySelectorAll('.star');

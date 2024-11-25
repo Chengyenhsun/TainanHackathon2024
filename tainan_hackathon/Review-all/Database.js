@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     observer.observe(document.body, { childList: true, subtree: true });
     
     function handleClick(event) {
-        const type = event.target.innerText.trim();
+        const type = event.target.innerText.trim().split(' ')[0];
         console.log('chose: ' + type);
         fetchAllData(type);
     }

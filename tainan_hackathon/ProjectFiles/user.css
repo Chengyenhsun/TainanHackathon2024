@@ -115,6 +115,25 @@ body {
     font-size: 1em;
 }
 
+.table-options label {
+    display: block; 
+    margin: 0.3125em 0; 
+    font-size: 1em;
+}
+.filter-btn {
+    width: 80%;
+    font-size: 1.25em; 
+    font-weight: 400;
+    margin-left: 1em;
+    margin-bottom: 0.8em; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 input[type="checkbox"] {
     width: 1.3em;  
     height: 1.3em; 
