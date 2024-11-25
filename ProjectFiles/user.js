@@ -41,7 +41,7 @@ async function fetchStoreDataByCategory(category) {
     // 根據 category 查詢相對應的資料表
     const { data: storeData, error: storeError } = await supabase
         .from(category) // 使用選擇的 category 作為資料表名稱
-        .select('store_name, coordinates, rating, user_ratings_total')
+        .select('store_name, coordinates, rating, user_ratings_total, photo_url')
         .gte('rating', selectedRating) // 根據星等過濾
 
     if (storeError) {
