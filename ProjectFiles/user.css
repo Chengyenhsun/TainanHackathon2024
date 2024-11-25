@@ -139,14 +139,14 @@ input[type="checkbox"] {
 }
 
 .search-button {
-    background-color: #134984; /* 預設藍色 */
+    background-color: #134984; 
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding:  0.625em 1.25em;
     text-align: center;
-    font-size: 16px;
+    font-size: 1em;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 0.3125em;
 }
 
 .search-button:hover {
@@ -154,6 +154,6 @@ input[type="checkbox"] {
 }
 
 .search-button.gray-button {
-    background-color: #a9a9a9 !important; /* 灰色 */
+    background-color: #a9a9a9 !important; 
     color: white !important;
 }

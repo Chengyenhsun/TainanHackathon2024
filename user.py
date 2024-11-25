@@ -15,7 +15,6 @@ def create_initial_map():
     m.save("ProjectFiles/map.html")
 
 
-# 初始地圖，確保每次啟動伺服器時都會生成
 create_initial_map()
 
 
@@ -36,11 +35,9 @@ async def search(request: Request):
         photo_url = store["photo_url"]
         store_data[store_name] = {"coordinates": coordinates, "photo_url": photo_url}
 
-    # 根據是否有店家數據來決定生成哪種地圖
     if store_data:
         create_map(store_data)
     else:
-        # 如果沒有店家數據，則重新加載初始地圖
         create_initial_map()
 
     return JSONResponse(content=store_data)
@@ -68,14 +65,11 @@ def create_map(store_data):
             "></div>
         </a>
         """
-
-        # 添加主要標記並附加 JavaScript 事件
         marker = folium.Marker(location=coords, icon=folium.DivIcon(html=icon_html))
         marker.add_to(m)
 
-        # 添加顯示店名的標記，並讓其可以直接跳轉
         folium.Marker(
-            location=[coords[0], coords[1]],  # 店名標記與圖標保持相同的經緯度
+            location=[coords[0], coords[1]],
             icon=folium.DivIcon(
                 html=f"""
         <div style="
