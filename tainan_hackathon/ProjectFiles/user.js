@@ -192,3 +192,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const moreRegionsBtn = document.getElementById('moreRegionsBtn');
+    const moreRegions = document.getElementById('moreRegions');
+
+    moreRegionsBtn.addEventListener('click', () => {
+        moreRegions.classList.toggle('hidden');
+        moreRegionsBtn.textContent = moreRegions.classList.contains('hidden') ? '查看更多' : '隱藏部分區域';
+    });
+});

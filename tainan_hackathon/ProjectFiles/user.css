@@ -23,7 +23,7 @@ body {
 .main-content {
     display: flex; 
     flex: 1; 
-    overflow: hidden; 
+    overflow: auto;
 }
 
 .left-panel {
@@ -33,6 +33,7 @@ body {
     background-color: #ffffff;
     overflow-y: auto;
     border-right: 0.0625em solid #ccc;
+    height: 100%;
 }
 
 .right-panel {
@@ -52,6 +53,27 @@ body {
     border: 0.0625em solid #ddd;
     border-radius: 0.3125em; 
     background-color: #f8f9fa;
+}
+
+.filter-box-type2 {  
+    height: auto;
+    position: relative;
+    margin: 1.25em 0; 
+    padding: 0.625em;
+    border: 0.0625em solid #ddd;
+    border-radius: 0.3125em; 
+    background-color: #f8f9fa;
+    padding-bottom: 1em;
+}
+
+.view-more-button {
+    position: absolute; 
+    bottom: 0em; 
+    right: 0.5em; 
+    cursor: pointer;
+    background-color: transparent;
+    color: #273543;
+    border: none;
 }
 
 .filter-title {
@@ -109,17 +131,12 @@ body {
     margin-bottom: 0.625em; 
 }
 
-.filter-options label {
-    display: block; 
-    margin: 0.3125em 0; 
-    font-size: 1em;
-}
-
 .table-options label {
     display: block; 
     margin: 0.3125em 0; 
     font-size: 1em;
 }
+
 .filter-btn {
     width: 80%;
     font-size: 1.25em; 
@@ -139,6 +156,18 @@ input[type="checkbox"] {
     height: 1.3em; 
     transform: scale(1.3); 
     margin-right: 0.5em;
+}
+
+.hidden {
+    display: none;
+}
+
+.filter-options label {
+    display: inline-block;
+    margin-right: 0.625em;
+    margin-bottom: 0.3125em;
+    font-size: 1em;
+    width: 45%; 
 }
 
 .custom-text {
