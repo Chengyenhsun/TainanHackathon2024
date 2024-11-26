@@ -5,7 +5,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 let selectedRating = 0; 
-
+let selectedRegions = [];
 
 document.addEventListener('DOMContentLoaded', function () {
     const stars = document.querySelectorAll('.star');
@@ -24,6 +24,23 @@ document.addEventListener('DOMContentLoaded', function () {
             star.classList.toggle('selected', i <= index);
         });
     }
+
+    const regionCheckboxes = document.querySelectorAll('#regionOptions input[type="checkbox"]');
+    regionCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            selectedRegions = Array.from(regionCheckboxes)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+            console.log('選擇的區域:', selectedRegions);
+        });
+    });
+    const moreRegionsBtn = document.getElementById('moreRegionsBtn');
+    const moreRegions = document.getElementById('moreRegions');
+
+    moreRegionsBtn.addEventListener('click', () => {
+        moreRegions.classList.toggle('hidden');
+        moreRegionsBtn.textContent = moreRegions.classList.contains('hidden') ? '查看更多' : '隱藏部分區域';
+    });
 });
 
 async function fetchAllTitles() {
@@ -72,8 +89,9 @@ async function fetchStoreDataByCategory(category) {
     
     const { data: storeData, error: storeError } = await supabase
         .from(category) 
-        .select('store_name, coordinates, rating, user_ratings_total, photo_url')
+        .select('store_name, coordinates, rating, user_ratings_total, photo_url, district')
         .gte('rating', selectedRating) 
+        .in('district', selectedRegions);
 
     if (storeError) {
         console.error('Error fetching store data from Supabase:', storeError);
@@ -169,6 +187,11 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".table-options input[type='checkbox']").forEach(function (checkbox) {
             checkbox.checked = false;
         });
+        const regionCheckboxes = document.querySelectorAll('#regionOptions input[type="checkbox"]');
+        regionCheckboxes.forEach(checkbox => {
+        checkbox.checked = false; 
+    });
+
         selectedRating = 0;
         highlightStars(-1);
     }
@@ -193,12 +216,3 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const moreRegionsBtn = document.getElementById('moreRegionsBtn');
-    const moreRegions = document.getElementById('moreRegions');
-
-    moreRegionsBtn.addEventListener('click', () => {
-        moreRegions.classList.toggle('hidden');
-        moreRegionsBtn.textContent = moreRegions.classList.contains('hidden') ? '查看更多' : '隱藏部分區域';
-    });
-});
