@@ -44,8 +44,13 @@ async def search(request: Request):
 
 
 def create_map(store_data):
-    tainan_train_station_coords = [22.997212, 120.212319]
-    m = folium.Map(location=tainan_train_station_coords, zoom_start=14)
+
+    if not store_data:
+        print("No store data available")
+        return
+
+    first_store_coords = list(store_data.values())[0]["coordinates"]
+    m = folium.Map(location=first_store_coords, zoom_start=15)
 
     for store, data in store_data.items():
         coords = data["coordinates"]
