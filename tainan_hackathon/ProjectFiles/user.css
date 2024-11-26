@@ -21,9 +21,19 @@ body {
 }
 
 .main-content {
+    position: relative;
     display: flex; 
     flex: 1; 
     overflow: auto;
+}
+
+.source-info {
+    position: absolute;
+    top: 0.7em;   
+    right: 0.7em; 
+    font-size: 1.1em; 
+    color: #6b6b6b;
+    padding: 0.3em;
 }
 
 .left-panel {
@@ -40,7 +50,7 @@ body {
     flex: 3; 
     padding: 1em;
     margin-left: 1em;
-    margin-top: 1.25em;
+    margin-top: 2.75em;
     overflow-y: auto;
     background-color: transparent;
     border: 0.0625em solid #ccc;
