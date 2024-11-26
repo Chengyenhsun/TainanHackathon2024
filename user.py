@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 import folium
 from fastapi.responses import JSONResponse
 import logging
+import math
 
 app = FastAPI()
 app.mount("/Home", StaticFiles(directory="ProjectFiles", html=True))
@@ -43,14 +44,37 @@ async def search(request: Request):
     return JSONResponse(content=store_data)
 
 
+def calculate_zoom_level(lat_diff, lon_diff):
+    """根據經緯度範圍計算地圖的 zoom_start"""
+    max_diff = max(lat_diff, lon_diff)
+    if max_diff < 0.01:  # 範圍極小，細節放大
+        return 16
+    elif max_diff < 0.1:  # 範圍小
+        return 14
+    elif max_diff < 1:  # 範圍中等
+        return 12
+    else:  # 範圍大
+        return max(8, 12 - int(math.log(max_diff, 2)))  # 使用對數進行縮放
+
+
 def create_map(store_data):
 
     if not store_data:
         print("No store data available")
         return
+    min_lat = min(store["coordinates"][0] for store in store_data.values())
+    max_lat = max(store["coordinates"][0] for store in store_data.values())
+    min_lon = min(store["coordinates"][1] for store in store_data.values())
+    max_lon = max(store["coordinates"][1] for store in store_data.values())
 
-    map_coords = list(store_data.values())[0]["coordinates"]
-    m = folium.Map(location=map_coords, zoom_start=15)
+    lat_diff = max_lat - min_lat
+    lon_diff = max_lon - min_lon
+
+    center_lat = (min_lat + max_lat) / 2
+    center_lon = (min_lon + max_lon) / 2
+    zoom_level = calculate_zoom_level(lat_diff, lon_diff)
+
+    m = folium.Map(location=[center_lat, center_lon], zoom_start=zoom_level)
 
     for store, data in store_data.items():
         coords = data["coordinates"]
