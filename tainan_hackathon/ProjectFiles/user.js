@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     moreRegionsBtn.addEventListener('click', () => {
         moreRegions.classList.toggle('hidden');
-        moreRegionsBtn.textContent = moreRegions.classList.contains('hidden') ? '查看更多' : '隱藏部分區域';
+        moreRegionsBtn.textContent = moreRegions.classList.contains('hidden') ? '查看更多區域' : '隱藏部分區域';
     });
 });
 
@@ -68,14 +68,37 @@ async function fetchAllTitles() {
 
         checkbox.type = 'checkbox';
         checkbox.value = item.title; 
+        checkbox.addEventListener('change', handleCheckboxChange);
         label.appendChild(checkbox);
         label.appendChild(document.createTextNode(` ${item.title}`));
         
         container.appendChild(label);
     });
 }
+let selectedTopic = null;
 
+function handleCheckboxChange(event) {
+    const checkboxes = document.querySelectorAll('.table-options input[type="checkbox"]');
+    
+    if (event.target.checked) {
+        if (selectedTopic) {
+            selectedTopic.checked = false;
+        }
 
+        selectedTopic = event.target; 
+        
+        checkboxes.forEach(checkbox => {
+            if (checkbox !== event.target) {
+                checkbox.disabled = true; 
+            }
+        });
+    } else {
+        selectedTopic = null;
+        checkboxes.forEach(checkbox => {
+            checkbox.disabled = false;
+        });
+    }
+}
 fetchAllTitles();
 
 async function fetchStoreDataByCategory(category) {
@@ -171,8 +194,16 @@ document.addEventListener("DOMContentLoaded", function () {
         resetFilters();
         await clearMapData();
         refreshIframe();
+        enableAllCheckboxes();
     }
 
+    function enableAllCheckboxes() {
+        const checkboxes = document.querySelectorAll('.table-options input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.disabled = false; // 解除禁用
+        });
+    }
+    
     function getSelectedFoods() {
         const selectedFoods = [];
         document.querySelectorAll(".table-options input[type='checkbox']:checked").forEach(function (checkbox) {
