@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const regionCheckboxes = document.querySelectorAll('#regionOptions input[type="checkbox"]');
+    const regionCheckboxes = document.querySelectorAll('#regionOptions input[type="checkbox"], #moreRegions input[type="checkbox"]');
+    
     regionCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
             selectedRegions = Array.from(regionCheckboxes)
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('選擇的區域:', selectedRegions);
         });
     });
+
     const moreRegionsBtn = document.getElementById('moreRegionsBtn');
     const moreRegions = document.getElementById('moreRegions');
 
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
         moreRegionsBtn.textContent = moreRegions.classList.contains('hidden') ? '查看更多' : '隱藏部分區域';
     });
 });
+
 
 async function fetchAllTitles() {
     const container = document.querySelector('.table-options');
@@ -187,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.querySelectorAll(".table-options input[type='checkbox']").forEach(function (checkbox) {
             checkbox.checked = false;
         });
-        const regionCheckboxes = document.querySelectorAll('#regionOptions input[type="checkbox"]');
+        const regionCheckboxes = document.querySelectorAll('#regionOptions input[type="checkbox"], #moreRegions input[type="checkbox"]');
         regionCheckboxes.forEach(checkbox => {
         checkbox.checked = false; 
     });
