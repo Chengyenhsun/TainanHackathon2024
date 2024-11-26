@@ -112,12 +112,13 @@ async function fetchStoreDataByCategory(category) {
         return [];
     }
 
+    let regionFilter = selectedRegions.length > 0 ? { in: ['district', selectedRegions] } : {};
     
     const { data: storeData, error: storeError } = await supabase
         .from(category) 
         .select('store_name, coordinates, rating, user_ratings_total, photo_url, district')
         .gte('rating', selectedRating) 
-        .in('district', selectedRegions);
+        .match(regionFilter);
 
     if (storeError) {
         console.error('Error fetching store data from Supabase:', storeError);
@@ -203,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
             checkbox.disabled = false; // 解除禁用
         });
     }
-    
+
     function getSelectedFoods() {
         const selectedFoods = [];
         document.querySelectorAll(".table-options input[type='checkbox']:checked").forEach(function (checkbox) {
