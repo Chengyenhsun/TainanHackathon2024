@@ -49,8 +49,8 @@ def create_map(store_data):
         print("No store data available")
         return
 
-    first_store_coords = list(store_data.values())[0]["coordinates"]
-    m = folium.Map(location=first_store_coords, zoom_start=15)
+    map_coords = list(store_data.values())[0]["coordinates"]
+    m = folium.Map(location=map_coords, zoom_start=15)
 
     for store, data in store_data.items():
         coords = data["coordinates"]

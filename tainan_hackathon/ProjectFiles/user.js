@@ -112,13 +112,13 @@ async function fetchStoreDataByCategory(category) {
         return [];
     }
 
-    let regionFilter = selectedRegions.length > 0 ? { in: ['district', selectedRegions] } : {};
-    
+    const regionFilter = selectedRegions.length > 0 ? selectedRegions : [];
+
     const { data: storeData, error: storeError } = await supabase
         .from(category) 
         .select('store_name, coordinates, rating, user_ratings_total, photo_url, district')
         .gte('rating', selectedRating) 
-        .match(regionFilter);
+        .in('district', regionFilter); 
 
     if (storeError) {
         console.error('Error fetching store data from Supabase:', storeError);
@@ -196,6 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
         await clearMapData();
         refreshIframe();
         enableAllCheckboxes();
+        selectedTopic = null; 
     }
 
     function enableAllCheckboxes() {
@@ -221,7 +222,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function resetFilters() {
         document.querySelectorAll(".table-options input[type='checkbox']").forEach(function (checkbox) {
             checkbox.checked = false;
+            checkbox.disabled = false;
         });
+
         const regionCheckboxes = document.querySelectorAll('#regionOptions input[type="checkbox"], #moreRegions input[type="checkbox"]');
         regionCheckboxes.forEach(checkbox => {
         checkbox.checked = false; 
@@ -229,6 +232,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         selectedRating = 0;
         highlightStars(-1);
+
+        const checkboxes = document.querySelectorAll('.table-options input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.disabled = false;  
+        });
+
     }
 
     async function clearMapData() {
