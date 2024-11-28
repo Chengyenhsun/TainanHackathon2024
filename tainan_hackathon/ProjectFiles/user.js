@@ -112,25 +112,27 @@ async function fetchStoreDataByCategory(category) {
         return [];
     }
 
-    const regionFilter = selectedRegions.length > 0 ? selectedRegions : [];
-
-    const { data: storeData, error: storeError } = await supabase
-        .from(category) 
+    const query = supabase
+        .from(category)
         .select('store_name, coordinates, rating, user_ratings_total, photo_url, district, hashtag')
-        .gte('rating', selectedRating) 
-        .in('district', regionFilter); 
+        .gte('rating', selectedRating); 
+
+    if (selectedRegions.length > 0) {
+        query.in('district', selectedRegions); 
+    }
+
+    const { data: storeData, error: storeError } = await query;
 
     if (storeError) {
         console.error('Error fetching store data from Supabase:', storeError);
         return [];
     }
 
-    
     const processedData = storeData.map(store => {
         const coordinates = store.coordinates
             .replace(/[()]/g, '') 
             .split(', ') 
-            .map(coord => parseFloat(coord)); 
+            .map(coord => parseFloat(coord));
 
         return { ...store, coordinates };
     });
