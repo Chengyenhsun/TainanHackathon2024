@@ -34,7 +34,13 @@ async def search(request: Request):
         store_name = store["store_name"]
         coordinates = store["coordinates"]
         photo_url = store["photo_url"]
-        store_data[store_name] = {"coordinates": coordinates, "photo_url": photo_url}
+        hashtag = store.get("hashtag", "")
+
+        store_data[store_name] = {
+            "coordinates": coordinates,
+            "photo_url": photo_url,
+            "hashtag": hashtag,
+        }
 
     if store_data:
         create_map(store_data)
@@ -47,14 +53,14 @@ async def search(request: Request):
 def calculate_zoom_level(lat_diff, lon_diff):
     """根據經緯度範圍計算地圖的 zoom_start"""
     max_diff = max(lat_diff, lon_diff)
-    if max_diff < 0.01:  # 範圍極小，細節放大
+    if max_diff < 0.01:
         return 16
-    elif max_diff < 0.1:  # 範圍小
+    elif max_diff < 0.1:
         return 14
-    elif max_diff < 1:  # 範圍中等
+    elif max_diff < 1:
         return 12
-    else:  # 範圍大
-        return max(8, 12 - int(math.log(max_diff, 2)))  # 使用對數進行縮放
+    else:
+        return max(8, 12 - int(math.log(max_diff, 2)))
 
 
 def create_map(store_data):
@@ -79,6 +85,7 @@ def create_map(store_data):
     for store, data in store_data.items():
         coords = data["coordinates"]
         photo_url = data["photo_url"]
+        hashtag = data["hashtag"]
         google_maps_url = f"https://www.google.com/maps/search/?api=1&query={store}"
 
         icon_html = f"""
@@ -95,6 +102,14 @@ def create_map(store_data):
         </a>
         """
         marker = folium.Marker(location=coords, icon=folium.DivIcon(html=icon_html))
+        if hashtag:
+            marker.add_child(
+                folium.Tooltip(
+                    f"<span style='font-size: 1.35em; font-weight: bold;'>{hashtag}</span>",
+                    permanent=False,
+                )
+            )
+
         marker.add_to(m)
 
         folium.Marker(

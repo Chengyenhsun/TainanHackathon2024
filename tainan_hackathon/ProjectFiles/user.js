@@ -116,7 +116,7 @@ async function fetchStoreDataByCategory(category) {
 
     const { data: storeData, error: storeError } = await supabase
         .from(category) 
-        .select('store_name, coordinates, rating, user_ratings_total, photo_url, district')
+        .select('store_name, coordinates, rating, user_ratings_total, photo_url, district, hashtag')
         .gte('rating', selectedRating) 
         .in('district', regionFilter); 
 
@@ -202,7 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function enableAllCheckboxes() {
         const checkboxes = document.querySelectorAll('.table-options input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
-            checkbox.disabled = false; // 解除禁用
+            checkbox.disabled = false; 
         });
     }
 
