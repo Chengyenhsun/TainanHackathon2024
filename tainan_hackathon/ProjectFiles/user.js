@@ -115,7 +115,10 @@ async function fetchStoreDataByCategory(category) {
     const query = supabase
         .from(category)
         .select('store_name, coordinates, rating, user_ratings_total, photo_url, district, hashtag')
-        .gte('rating', selectedRating); 
+
+    if (selectedRating > 0) {
+        query.gte('rating', selectedRating);
+    }
 
     if (selectedRegions.length > 0) {
         query.in('district', selectedRegions); 
@@ -202,11 +205,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function enableAllCheckboxes() {
-        const checkboxes = document.querySelectorAll('.table-options input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.disabled = false; 
+        document.querySelectorAll(".table-options input[type='checkbox']").forEach(function (checkbox) {
+        checkbox.checked = false;
+        checkbox.disabled = false;
         });
-    }
+        const regionCheckboxes = document.querySelectorAll('#regionOptions input[type="checkbox"], #moreRegions input[type="checkbox"]');
+    regionCheckboxes.forEach(checkbox => {
+        checkbox.checked = false; 
+    });
+    selectedRegions = []; 
+
+    selectedRating = 0;
+    highlightStars(-1); 
+
+    const checkboxes = document.querySelectorAll('.table-options input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.disabled = false;  
+    });
+}
+    
 
     function getSelectedFoods() {
         const selectedFoods = [];
