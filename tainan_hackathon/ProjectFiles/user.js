@@ -61,8 +61,6 @@ async function fetchAllTitles() {
     }
 
     data.forEach(item => {
-        console.log('Got title:', item.title);
-        
         const label = document.createElement('label');
         const checkbox = document.createElement('input');
 
